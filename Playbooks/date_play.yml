@@ -1,0 +1,8 @@
+-
+  name: Date and Uptime stats playbook
+  hosts: all
+  tasks:
+    - name: Date in UTC
+      command: date
+    - name: System Uptime
+      command: uptime

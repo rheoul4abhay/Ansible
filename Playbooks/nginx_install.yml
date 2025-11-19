@@ -1,0 +1,14 @@
+-
+  name: nginx installation playbook
+  hosts: dev # To run only on dev-group of servers
+  become: yes # Means become root -> yes
+  tasks:
+    - name: install nginx
+      apt:
+        name: nginx
+        state: latest
+    - name: start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes # To automatically start nginx on system startups

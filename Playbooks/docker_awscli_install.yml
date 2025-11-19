@@ -1,0 +1,59 @@
+---
+- name: Install Docker and AWS CLI based on OS
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Docker on Debian/Ubuntu
+      apt:
+        name: docker.io
+        state: latest
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install Docker on RedHat/CentOS
+      yum:
+        name: docker
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+    - name: Enable and start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Show Docker version
+      command: docker --version
+      register: docker_version
+      ignore_errors: yes
+
+    - debug:
+        msg: "Docker version on {{ inventory_hostname }}: {{ docker_version.stdout | default('Not Installed') }}"
+
+    - name: Add original user to docker group
+      user:
+        name: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+        groups: docker
+        append: yes
+
+    - name: Install unzip (required for AWS CLI)
+      package:
+        name: unzip
+        state: present
+
+    - name: Install AWS CLI
+      shell: |
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+      args:
+        creates: /usr/local/bin/aws
+        # args and creates ensure: before running this shell block, check if /usr/local/bin/aws exists. If it does, skip this task.
+
+    - name: Show AWS CLI version
+      command: aws --version
+      register: aws_version
+      ignore_errors: yes
+
+    - debug:
+        msg: "AWS CLI version on {{ inventory_hostname }}: {{ aws_version.stdout | default('Not Installed') }}"
