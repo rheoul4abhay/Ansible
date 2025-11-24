@@ -1,0 +1,12 @@
+---
+- name: "Package installations"
+  hosts: all
+  become: yes
+  tasks:
+    - yum:
+        name: vsftpd
+        state: latest
+    - service:
+        name: vsftpd
+        state: started
+

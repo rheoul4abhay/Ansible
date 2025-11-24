@@ -1,0 +1,10 @@
+---
+- name: This is a play to add a new line to existing file
+  hosts: node01
+  become: yes
+  tasks:
+    - lineinfile:
+        path: /var/www/html/index.html
+        line: 'Welcome to KodeKloud Labs!'
+        state: present
+        insertbefore: BOF

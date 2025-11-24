@@ -1,0 +1,9 @@
+---
+- name: Creating Archive
+  hosts: all
+  become: yes
+  tasks:
+    - name: "Archive the file"
+      archive:
+        path: /usr/src/ecommerce/
+        dest: /opt/ecommerce/demo.tar.gz
